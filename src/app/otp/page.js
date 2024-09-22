@@ -70,9 +70,6 @@
 
 
 
-
-
-
 "use client";
 
 import { useEffect, useRef } from 'react';
@@ -104,7 +101,9 @@ export default function OtpPage() {
         if (otp) {
           const otpCode = otp.code.split('');
           otpCode.forEach((digit, index) => {
-            inputRefs[index].current.value = digit; // Autofill OTP
+            if (inputRefs[index] && inputRefs[index].current) {
+              inputRefs[index].current.value = digit; // Autofill OTP into each box
+            }
           });
           // Optionally submit the form here
         }

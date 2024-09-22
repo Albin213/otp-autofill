@@ -1,18 +1,26 @@
-"use client"; // Necessary for using hooks like useState and useEffect
+"use client"; // For using React hooks
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 
 export default function OtpPage() {
-  const [otp, setOtp] = useState('');
-
   useEffect(() => {
-    // Web OTP API: Listen for OTP from SMS and autofill the input
+    // Web OTP API - Fetch OTP from SMS
     if ('OTPCredential' in window) {
+      const ac = new AbortController(); // AbortController allows you to control the request
+
       navigator.credentials
-        .get({ otp: { transport: ['sms'] } })
+        .get({
+          otp: { transport: ['sms'] },
+          signal: ac.signal, // Abort signal in case you need to cancel the request
+        })
         .then((otpCredential) => {
           if (otpCredential && otpCredential.code) {
-            setOtp(otpCredential.code); // Autofill the OTP
+            // Autofill the OTP into the input field
+            const otpInput = document.getElementById('otp-input');
+            otpInput.value = otpCredential.code;
+
+            // Automatically submit the form once OTP is received
+            document.getElementById('otp-form').submit();
           }
         })
         .catch((err) => {
@@ -21,31 +29,25 @@ export default function OtpPage() {
     }
   }, []);
 
-  const handleOtpChange = (e) => {
-    setOtp(e.target.value);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert(`OTP Submitted: ${otp}`);
-  };
-
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">
       <form
-        onSubmit={handleSubmit}
+        id="otp-form"
+        action="/api/verify-otp" // Backend route to verify OTP
+        method="POST"
         className="bg-white p-6 rounded-md shadow-lg max-w-md w-full"
       >
         <h2 className="text-2xl font-bold text-center mb-4">Enter OTP</h2>
         <input
+          id="otp-input"
           type="text"
-          value={otp}
-          onChange={handleOtpChange}
+          name="otp"
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          pattern="\d{6}" // Adjust for a 6-digit OTP
+          required
           placeholder="Enter your OTP"
           className="w-full border border-gray-300 rounded-md p-2 text-lg mb-4"
-          inputMode="numeric"
-          maxLength="4"
-          autoComplete="one-time-code" // Helps the browser recognize OTP input field
         />
         <button
           type="submit"

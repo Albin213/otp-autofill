@@ -1,9 +1,24 @@
-"use client"; // Mark this as a client component if you need to use hooks like useState
+"use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function OtpPage() {
   const [otp, setOtp] = useState('');
+
+  useEffect(() => {
+    // Check if the browser supports the Web OTP API
+    if ('OTPCredential' in window) {
+      navigator.credentials.get({ otp: { transport: ['sms'] } })
+        .then(otpCredential => {
+          if (otpCredential && otpCredential.code) {
+            setOtp(otpCredential.code);
+          }
+        })
+        .catch(err => {
+          console.error('Error while fetching OTP: ', err);
+        });
+    }
+  }, []);
 
   const handleOtpChange = (e) => {
     setOtp(e.target.value);
@@ -27,6 +42,8 @@ export default function OtpPage() {
           onChange={handleOtpChange}
           placeholder="Enter your OTP"
           className="w-full border border-gray-300 rounded-md p-2 text-lg mb-4"
+          inputMode="numeric" // helps mobile devices to show numeric keyboards
+          maxLength="4" // Restricting input to 4 digits
         />
         <button
           type="submit"

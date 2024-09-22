@@ -1,4 +1,4 @@
-"use client";
+"use client"; // Necessary for using hooks like useState and useEffect
 
 import { useState, useEffect } from 'react';
 
@@ -6,16 +6,17 @@ export default function OtpPage() {
   const [otp, setOtp] = useState('');
 
   useEffect(() => {
-    // Check if the browser supports the Web OTP API
+    // Web OTP API: Listen for OTP from SMS and autofill the input
     if ('OTPCredential' in window) {
-      navigator.credentials.get({ otp: { transport: ['sms'] } })
-        .then(otpCredential => {
+      navigator.credentials
+        .get({ otp: { transport: ['sms'] } })
+        .then((otpCredential) => {
           if (otpCredential && otpCredential.code) {
-            setOtp(otpCredential.code);
+            setOtp(otpCredential.code); // Autofill the OTP
           }
         })
-        .catch(err => {
-          console.error('Error while fetching OTP: ', err);
+        .catch((err) => {
+          console.error('Error fetching OTP:', err);
         });
     }
   }, []);
@@ -42,8 +43,9 @@ export default function OtpPage() {
           onChange={handleOtpChange}
           placeholder="Enter your OTP"
           className="w-full border border-gray-300 rounded-md p-2 text-lg mb-4"
-          inputMode="numeric" // helps mobile devices to show numeric keyboards
-          maxLength="4" // Restricting input to 4 digits
+          inputMode="numeric"
+          maxLength="4"
+          autoComplete="one-time-code" // Helps the browser recognize OTP input field
         />
         <button
           type="submit"

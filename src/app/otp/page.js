@@ -24,7 +24,7 @@ export default function OtpPage() {
         otp: { transport: ['sms'] },
         signal: ac.signal,
       }).then(otp => {
-        if (otp) {
+        if (otp && otp.code.length === 6) {
           const otpCode = otp.code.split('');
           otpCode.forEach((digit, index) => {
             if (inputRefs[index] && inputRefs[index].current) {
@@ -72,7 +72,7 @@ export default function OtpPage() {
             type="submit" 
             className='w-20 sm:w-24 py-2 text-white font-semibold text-xs sm:text-sm bg-gradient-to-b from-[#5A5A5A] to-[#000000] rounded-xl'
           >
-            Submit 
+            Submit OTP
           </button>
         </div>
       </div>

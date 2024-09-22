@@ -13,7 +13,7 @@ export default function Home() {
     <div className="flex items-center justify-center h-screen bg-gray-100">
       <button
         onClick={handleOtpPage}
-        className="bg-blue-600 text-white p-3 rounded-md text-lg"
+        className="bg-yellow-600 text-white p-3 rounded-md text-lg"
       >
         Enter OTP
       </button>
